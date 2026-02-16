@@ -1,4 +1,5 @@
 import tkinter as tk
+import random
 
 root = tk.Tk()
 root.title("Snake")
@@ -10,6 +11,14 @@ canvas.pack()
 snake = [[100, 100], [80, 100], [60, 100]]
 direction = "Right"
 grid_size = 20
+score = 0
+
+def create_food():
+    x = random.randrange(0, 600, grid_size)
+    y = random.randrange(0, 600, grid_size)
+    return x, y
+
+food_x, food_y = create_food()
 
 def change_direction(event):
     global direction
@@ -26,7 +35,7 @@ def change_direction(event):
 root.bind("<KeyPress>", change_direction)
 
 def game_loop():
-    global snake
+    global snake, food_x, food_y, score
     head_x, head_y = snake[0]
 
     if direction == "Up":
@@ -40,11 +49,18 @@ def game_loop():
 
     new_head = [head_x, head_y]
     snake.insert(0, new_head)
-    snake.pop()
+
+    if head_x == food_x and head_y == food_y:
+        score += 1
+        food_x, food_y = create_food()
+    else:
+        snake.pop()
 
     canvas.delete("all")
     for x, y in snake:
         canvas.create_rectangle(x, y, x + grid_size, y + grid_size, fill="green")
+    canvas.create_rectangle(food_x, food_y, food_x + grid_size, food_y + grid_size, fill="red")
+    canvas.create_text(10, 10, anchor="nw", fill="white", text=f"Score: {score}")
 
     root.after(100, game_loop)
 
