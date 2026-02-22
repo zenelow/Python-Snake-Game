@@ -69,6 +69,9 @@ def change_direction(event):
             game_mode = "Normal"
             start_game()
             return
+    if state == "gameover" and new_dir in ("q", "Q"):
+        root.destroy()
+        return
     if new_dir in ("r", "R"):
         restart_game()
         return
@@ -204,12 +207,13 @@ def game_loop():
         remaining = (bonus_timer * TICK_MS + 999) // 1000
         canvas.create_text(590, 10, anchor="ne", fill="white", text=f"Bonus: {remaining}s")
 
-    canvas.create_text(10, 10, anchor="nw", fill="white", text=f"Score: {score}")
+        canvas.create_text(10, 10, anchor="nw", fill="white", text=f"Score: {score}")
 
     if state == "gameover":
         after_id = None
         canvas.create_text(300, 280, fill="white", text="Game Over", font=("Arial", 32))
-        canvas.create_text(300, 330, fill="white", text="Press R to restart", font=("Arial", 14))
+        canvas.create_text(300, 320, fill="white", text="Press R to restart", font=("Arial", 14))
+        canvas.create_text(300, 350, fill="white", text="Press Q to quit", font=("Arial", 14))
         return
 
     after_id = root.after(TICK_MS, game_loop)
