@@ -79,8 +79,14 @@ def game_loop():
         return
     if state == "gameover":
         canvas.delete("all")
-        for x, y in snake:
-            canvas.create_rectangle(x, y, x + grid_size, y + grid_size, fill="green")
+        for i, (x, y) in enumerate(snake):
+            if i == 0:
+                color = "lime"
+            elif i == len(snake) - 1:
+                color = "#004400"
+            else:
+                color = "green"
+            canvas.create_rectangle(x, y, x + grid_size, y + grid_size, fill=color)
         canvas.create_rectangle(food_x, food_y, food_x + grid_size, food_y + grid_size, fill="red")
         canvas.create_text(10, 10, anchor="nw", fill="white", text=f"Score: {score}")
         canvas.create_text(300, 280, fill="white", text="Game Over", font=("Arial", 32))
@@ -99,18 +105,22 @@ def game_loop():
         head_x += grid_size
 
     new_head = [head_x, head_y]
-    snake.insert(0, new_head)
 
+    died = False
     if head_x < 0 or head_x >= 600 or head_y < 0 or head_y >= 600:
         state = "gameover"
-    elif new_head in snake[1:]:
+        died = True
+    elif new_head in snake:
         state = "gameover"
+        died = True
 
-    if head_x == food_x and head_y == food_y:
-        score += 1
-        food_x, food_y = create_food()
-    else:
-        snake.pop()
+    if not died:
+        snake.insert(0, new_head)
+        if head_x == food_x and head_y == food_y:
+            score += 1
+            food_x, food_y = create_food()
+        else:
+            snake.pop()
 
     canvas.delete("all")
     for i, (x, y) in enumerate(snake):
