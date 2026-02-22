@@ -49,7 +49,7 @@ def create_bonus():
 food_x, food_y = create_food()
 
 def change_direction(event):
-    global direction, next_direction, state, TICK_MS, game_mode
+    global direction, next_direction, state, TICK_MS, game_mode, after_id
     new_dir = event.keysym
     if state == "start":
         if new_dir in ("1", "2", "3"):
@@ -88,6 +88,10 @@ def change_direction(event):
     if direction == "Right" and new_dir == "Left":
         return
     next_direction = new_dir
+    if after_id is not None and state == "playing":
+        root.after_cancel(after_id)
+        after_id = None
+        game_loop()
 
 root.bind("<KeyPress>", change_direction)
 
@@ -207,7 +211,7 @@ def game_loop():
         remaining = (bonus_timer * TICK_MS + 999) // 1000
         canvas.create_text(590, 10, anchor="ne", fill="white", text=f"Bonus: {remaining}s")
 
-        canvas.create_text(10, 10, anchor="nw", fill="white", text=f"Score: {score}")
+    canvas.create_text(10, 10, anchor="nw", fill="white", text=f"Score: {score}")
 
     if state == "gameover":
         after_id = None
